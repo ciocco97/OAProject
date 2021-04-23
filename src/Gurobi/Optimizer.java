@@ -64,11 +64,11 @@ public class Optimizer {
         model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
         model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
 
-        System.out.println("funzione obiettivo");
+        System.out.println("Objective function is creating... ");
 
         obj.addTerms(null, ys);
 
-        System.out.println("comincia l'ottimizzazione");
+        System.out.println("mamme l'ottimizzazione");
         model.optimize();
 
 
