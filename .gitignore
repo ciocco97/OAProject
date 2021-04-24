@@ -1,5 +1,6 @@
 # Project exclude paths
 /out/
+OAProject/.idea/libraries/gurobi.xml
 #
 .project
 .classpath

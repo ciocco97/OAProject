@@ -118,3 +118,72 @@ Academic license - for non-commercial use only - expires 2021-06-22
 Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 11:06:17 2021
 
 Academic license - for non-commercial use only - expires 2021-06-22
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:12:25 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:13:32 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:14:58 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:29:56 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:30:16 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 7195218 rows, 8338383 columns and 22391821 nonzeros
+Model fingerprint: 0x170d2da3
+Variable types: 3 continuous, 8338380 integer (8338380 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 1e+01]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+05]
+Presolve removed 7002179 rows and 8148876 columns (presolve time = 6s) ...
+Presolve removed 7195218 rows and 8338383 columns
+Presolve time: 8.83s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 12.42 seconds
+Thread count was 1 (of 8 available processors)
+
+Solution count 1: -565694 
+No other solutions better than -565694
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective -5.656939000329e+05, best bound -5.656939000329e+05, gap 0.0000%
+
+Gurobi 9.1.1 (win64, Java) logging started Sat Apr 24 16:56:24 2021
+
+Academic license - for non-commercial use only - expires 2021-06-22
+Gurobi Optimizer version 9.1.1 build v9.1.1rc0 (win64)
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+Optimize a model with 7195218 rows, 8338383 columns and 22391821 nonzeros
+Model fingerprint: 0x65e143a0
+Variable types: 3 continuous, 8338380 integer (8338380 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 1e+01]
+  Objective range  [1e+00, 2e+01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 2e+05]
+Presolve removed 7055569 rows and 8135692 columns (presolve time = 6s) ...
+Presolve removed 7195218 rows and 8338383 columns
+Presolve time: 9.17s
+Presolve: All rows and columns removed
+
+Explored 0 nodes (0 simplex iterations) in 12.75 seconds
+Thread count was 1 (of 8 available processors)
+
+Solution count 1: 588171 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 5.881714000261e+05, best bound 5.881714000261e+05, gap 0.0000%

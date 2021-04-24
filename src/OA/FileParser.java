@@ -43,9 +43,9 @@ public class FileParser {
         float p1, p2, p3;
         while ((line = br.readLine()) != null) {
             nums = line.split(" ");
-            r = Integer.parseInt(nums[0]); // id of the activity
-            u = Integer.parseInt(nums[1]); // id of the categiry
-            a = Integer.parseInt(nums[2]); // capacity of the activity
+            r = Integer.parseInt(nums[0]);
+            u = Integer.parseInt(nums[1]);
+            a = Integer.parseInt(nums[2]);
             d = Integer.parseInt(nums[3]);
             t = Integer.parseInt(nums[4]);
             g = Integer.parseInt(nums[5]);

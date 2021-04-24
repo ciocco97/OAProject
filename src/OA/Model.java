@@ -83,4 +83,13 @@ public class Model {
         return this.numOfActivities;
     }
 
+    public double[] getGains() {
+
+        double gains[] = new double[numOfRequests];
+        for (int i = 0; i < numOfRequests; i++) {
+            gains[i] = instance.getGainByRequest(i);
+        }
+        return gains;
+    }
+
 }

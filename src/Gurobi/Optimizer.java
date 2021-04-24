@@ -38,6 +38,10 @@ public class Optimizer {
         ts = new GRBVar[K.getNumOfTimeSlots()];
         as = new GRBVar[K.getNumOfActivities()];
         ds = new GRBVar[K.getNumOfDays()];
+
+        phiT = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiT");
+        phiA = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiA");
+        phiD = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiD");
     }
 
 
@@ -57,13 +61,20 @@ public class Optimizer {
             // System.out.println(i);
         }
 
-        // model.addConstr(penalA, GRB.EQUAL, phiA, "const2");
-        // model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
-        // model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
+        model.addConstr(penalA, GRB.EQUAL, phiA, "const2");
+        model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
+        model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
 
         System.out.println("Objective function is creating... ");
 
-        obj.addTerms(null, ys);
+        double[] requestGains = K.getGains();
+        obj.addTerms(requestGains, ys);
+        obj.addTerm(-1, phiA);
+        obj.addTerm(-1, phiD);
+        obj.addTerm(-1, phiT);
+
+        model.setObjective(obj, GRB.MAXIMIZE);
+        model.update();
 
         System.out.println("mamme l'ottimizzazione");
         model.optimize();
