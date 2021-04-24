@@ -76,7 +76,7 @@ public class Model {
     }
 
     public int getNumOfDays() {
-        return instance.getNum_timeslots();
+        return instance.getNum_days();
     }
 
     public int getNumOfActivities() {

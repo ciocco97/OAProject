@@ -15,7 +15,7 @@ public class FileParser {
 
     public Instance getIstance() throws Exception {
         BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine(); //the first line is a set of numbers
+        String line = br.readLine(); // the first line is a set of numbers
         String[] nums = line.split(" "); // the numbers are splitted by the space character
         int num_families = Integer.parseInt(nums[0]);
         int num_activities = Integer.parseInt(nums[1]);
@@ -25,15 +25,15 @@ public class FileParser {
         int num_proxiesRequests = Integer.parseInt(nums[5]);
 
         Instance istance = new Instance(num_families, num_activities, num_timeslots, num_days, num_categories, num_proxiesRequests);
-        br.readLine(); //skip a line that contains "ACTIVITIES"
+        br.readLine(); // skip a line that contains "ACTIVITIES"
 
         int a, c, L;
         for (int i = 0; i < num_activities; i++) {
             line = br.readLine();
             nums = line.split(" ");
-            a = Integer.parseInt(nums[0]); //id of the activity
-            c = Integer.parseInt(nums[1]); //id of the categiry
-            L = Integer.parseInt(nums[2]); //capacity of the activity
+            a = Integer.parseInt(nums[0]); // id of the activity
+            c = Integer.parseInt(nums[1]); // id of the categiry
+            L = Integer.parseInt(nums[2]); // capacity of the activity
             istance.addActivity(a, c, L);
         }
 
@@ -43,9 +43,9 @@ public class FileParser {
         float p1, p2, p3;
         while ((line = br.readLine()) != null) {
             nums = line.split(" ");
-            r = Integer.parseInt(nums[0]); //id of the activity
-            u = Integer.parseInt(nums[1]); //id of the categiry
-            a = Integer.parseInt(nums[2]); //capacity of the activity
+            r = Integer.parseInt(nums[0]); // id of the activity
+            u = Integer.parseInt(nums[1]); // id of the categiry
+            a = Integer.parseInt(nums[2]); // capacity of the activity
             d = Integer.parseInt(nums[3]);
             t = Integer.parseInt(nums[4]);
             g = Integer.parseInt(nums[5]);

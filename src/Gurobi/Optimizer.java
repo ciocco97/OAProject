@@ -48,9 +48,6 @@ public class Optimizer {
 
 
         for (int i = 0; i < rNum; i++) {
-            timeslot = K.getRequest(i).getTime();
-            day = K.getRequest(i).getDay();
-            activity = K.getRequest(i).getActivity();
             // generation of the variables
             R[i] = new GRBRequest(model, t, d, a, i);
             // i need these for the objective function
@@ -60,9 +57,9 @@ public class Optimizer {
             // System.out.println(i);
         }
 
-        model.addConstr(penalA, GRB.EQUAL, phiA, "const2");
-        model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
-        model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
+        // model.addConstr(penalA, GRB.EQUAL, phiA, "const2");
+        // model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
+        // model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
 
         System.out.println("Objective function is creating... ");
 
@@ -122,16 +119,16 @@ public class Optimizer {
         as = R.getA();
 
         float tetaT = K.getPenalty_T();
-        penalT.addConstant(K.getPenalty_T());
-        penalT.addTerm(-1 * tetaT, ts[K.getTime() - 1]);
+        penalT.addConstant(tetaT);
+        penalT.addTerm(-1 * tetaT, ts[K.getTime()]);
 
         float tetaD = K.getPenalty_D();
-        penalD.addConstant(K.getPenalty_D());
-        penalD.addTerm(-1 * tetaD, ds[K.getDay() - 1]);
+        penalD.addConstant(tetaD);
+        penalD.addTerm(-1 * tetaD, ds[K.getDay()]);
 
         float tetaA = K.getPenalty_A();
-        penalA.addConstant(K.getPenalty_A());
-        penalA.addTerm(-1 * tetaA, as[K.getActivity() - 1]);
+        penalA.addConstant(tetaA);
+        penalA.addTerm(-1 * tetaA, as[K.getActivity()]);
 
         constraint.addTerms(null, ts);
         model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".const5");
