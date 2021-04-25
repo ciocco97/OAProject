@@ -92,4 +92,6 @@ public class Model {
         return gains;
     }
 
+    public int getMAXNumProxyRequests() { return instance.getNum_proxyRequests(); }
+
 }

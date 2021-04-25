@@ -7,7 +7,7 @@ import gurobi.*;
 public class Optimizer {
     private GRBModel model;
     private Model K;
-    private GRBLinExpr obj, penalT, penalD, penalA, constraint;
+    private GRBLinExpr obj, penalT, penalD, penalA, MAXProxyDay, constraint;
     private int rNum, t, d, a;
     private GRBRequest[] R;
     private GRBVar[] ys, ts, as, ds;
@@ -19,7 +19,7 @@ public class Optimizer {
         rNum = K.getNumOfRequests();
         R = new GRBRequest[rNum];
         GRBEnv env = new GRBEnv(true);
-        env.set("logFile", "mip1.log");
+        env.set("logFile", "log/mip1.log");
         env.start();
         // create an empty model that will be filled
         model = new GRBModel(env);
@@ -29,6 +29,7 @@ public class Optimizer {
         penalT = new GRBLinExpr();
         penalD = new GRBLinExpr();
         penalA = new GRBLinExpr();
+        MAXProxyDay = new GRBLinExpr();
 
         t = K.getNumOfTimeSlots();
         d = K.getNumOfDays();
@@ -61,9 +62,11 @@ public class Optimizer {
             // System.out.println(i);
         }
 
-        model.addConstr(penalA, GRB.EQUAL, phiA, "const2");
-        model.addConstr(penalD, GRB.EQUAL, phiD, "const3");
-        model.addConstr(penalT, GRB.EQUAL, phiT, "const4");
+        model.addConstr(penalA, GRB.EQUAL, phiA, "constr2");
+        model.addConstr(penalD, GRB.EQUAL, phiD, "constr3");
+        model.addConstr(penalT, GRB.EQUAL, phiT, "constr4");
+
+        model.addConstr(MAXProxyDay, GRB.LESS_EQUAL, K.getMAXNumProxyRequests(), "constr11");
 
         System.out.println("Objective function is creating... ");
 
@@ -76,50 +79,8 @@ public class Optimizer {
         model.setObjective(obj, GRB.MAXIMIZE);
         model.update();
 
-        System.out.println("mamme l'ottimizzazione");
+        System.out.println("Start optimization");
         model.optimize();
-
-
-        //sum of y
-
-      /*
-
-      // Create variables
-      GRBVar x = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "x");
-      GRBVar y = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "y");
-      GRBVar z = model.addVar(0.0, 1.0, 0.0, GRB.BINARY, "z");
-
-      // Set objective: maximize x + y + 2 z
-      GRBLinExpr expr = new GRBLinExpr();
-      expr.addTerm(1.0, x); expr.addTerm(1.0, y); expr.addTerm(2.0, z);
-      model.setObjective(expr, GRB.MAXIMIZE);
-
-      // Add constraint: x + 2 y + 3 z <= 4
-      expr = new GRBLinExpr();
-      expr.addTerm(1.0, x); expr.addTerm(2.0, y); expr.addTerm(3.0, z);
-      model.addConstr(expr, GRB.LESS_EQUAL, 4.0, "c0");
-
-      // Add constraint: x + y >= 1
-      expr = new GRBLinExpr();
-      expr.addTerm(1.0, x); expr.addTerm(1.0, y);
-      model.addConstr(expr, GRB.GREATER_EQUAL, 1.0, "c1");
-
-      // Optimize model
-      model.optimize();
-
-      System.out.println(x.get(GRB.StringAttr.VarName)
-                         + " " +x.get(GRB.DoubleAttr.X));
-      System.out.println(y.get(GRB.StringAttr.VarName)
-                         + " " +y.get(GRB.DoubleAttr.X));
-      System.out.println(z.get(GRB.StringAttr.VarName)
-                         + " " +z.get(GRB.DoubleAttr.X));
-
-      System.out.println("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
-
-      // Dispose of model and environment
-      model.dispose();
-      env.dispose();
-*/
 
     }
 
@@ -142,15 +103,15 @@ public class Optimizer {
         penalA.addTerm(-1 * tetaA, as[K.getActivity()]);
 
         constraint.addTerms(null, ts);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".const5");
+        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr5");
 
         constraint = new GRBLinExpr();
         constraint.addTerms(null, ds);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".const6");
+        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr6");
 
         constraint = new GRBLinExpr();
         constraint.addTerms(null, as);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".const7a");
+        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr7a");
 
         // ATTENZIONE, SERVE CHIEDERE A EIL IN DIEIL perché non ho troppo capito la faccenda del mapping, cioè,
         // secondo me non serve
@@ -160,15 +121,22 @@ public class Optimizer {
         }
 
         model.addConstr(R.getY(), GRB.GREATER_EQUAL, K.getPROXY() - 1, i + ".constr8");
+
         model.addConstr(R.getP(), GRB.GREATER_EQUAL, K.getPROXY() - 1, i + ".constr9a");
         model.addConstr(R.getP(), GRB.LESS_EQUAL, K.getPROXY(), i + ".constr9b");
 
         model.addConstr(R.getP(), GRB.LESS_EQUAL, R.getY(), i + ".constr10");
 
+
+        for (int j = 0; j < this.d; j++) {
+            int a = K.getDays()[j] ? 1 : 0;
+            MAXProxyDay.addTerm(a, R.getP());
+        }
+
     }
 
     public static void main(String args[]) throws Exception {
-        Optimizer opt = new Optimizer("src/OTSP1.txt");
+        Optimizer opt = new Optimizer("inst/istanza_giocattolo.txt");
         opt.buildModel();
     }
 
