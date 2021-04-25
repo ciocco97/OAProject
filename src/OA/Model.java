@@ -76,11 +76,22 @@ public class Model {
     }
 
     public int getNumOfDays() {
-        return instance.getNum_timeslots();
+        return instance.getNum_days();
     }
 
     public int getNumOfActivities() {
         return this.numOfActivities;
     }
+
+    public double[] getGains() {
+
+        double gains[] = new double[numOfRequests];
+        for (int i = 0; i < numOfRequests; i++) {
+            gains[i] = instance.getGainByRequest(i);
+        }
+        return gains;
+    }
+
+    public int getMAXNumProxyRequests() { return instance.getNum_proxyRequests(); }
 
 }
