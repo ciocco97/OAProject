@@ -81,6 +81,12 @@ public class Optimizer {
 
         System.out.println("Start optimization");
         model.optimize();
+        String output;
+        for (GRBRequest r:R){
+            output+=r.getY().get(GRB.DoubleAttr.X);
+            System.out.println(r.getY().get(GRB.DoubleAttr.X));
+        }
+        System.out.println(output);
 
     }
 
@@ -135,9 +141,13 @@ public class Optimizer {
 
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         Optimizer opt = new Optimizer("inst/istanza_giocattolo.txt");
         opt.buildModel();
+
+
+
+
     }
 
 }

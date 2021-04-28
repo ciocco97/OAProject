@@ -70,4 +70,20 @@ public class GRBRequest {
         this.y = y;
     }
 
+    public int getPValue() throws GRBException {
+        return (int) p.get(GRB.DoubleAttr.X);
+    }
+    public int getYValue() throws GRBException {
+        return (int) y.get(GRB.DoubleAttr.X);
+    }
+    public int getTValue(int index) throws GRBException {
+        return (int) t[index].get(GRB.DoubleAttr.X);
+    }
+    public int getDValue(int index) throws GRBException {
+        return (int) d[index].get(GRB.DoubleAttr.X);
+    }
+    public int getAValue(int index) throws GRBException {
+        return (int) a[index].get(GRB.DoubleAttr.X);
+    }
+
 }
