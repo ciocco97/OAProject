@@ -9,11 +9,11 @@ public class Optimizer {
     private GRBModel model;
     private Model K;
     private GRBRequest[] R;
-    private GRBLinExpr obj, penalT, penalD, penalA, expr_temp1, expr_temp2;
+    private GRBLinExpr obj, penalT, penalD, penalA, expr_temp1, expr_temp2, expr_temp3;
     private int rNum, tNum, dNum, aNum;
     private GRBVar[] ys, ts, as, ds;
-    private GRBVar phiT, phiD, phiA, y_step, x_step;
-    private final double stepx_2[] = {0, 1.5, 2, 3}; private final double stepx_0[] = {-1, -0.5, 0, 1};
+    private GRBVar phiT, phiD, phiA, y_step_1, y_step_2, x_step;
+    private final double stepx_2[] = {0, 1.5, 2, 2.5}; private final double stepx_4[] = {-5, 3.5, 4, 4.5};
     private final double stepy[] = {0, 0, 1, 1};
 
     public Optimizer(String filename) throws Exception {
@@ -61,11 +61,7 @@ public class Optimizer {
         MyLog.log("Generating requests, days, times... constraints");
         for (int index_D = 0; index_D < dNum; index_D++) {
             addProxyCapacityContraint(index_D);
-            for (int index_T = 0; index_T < tNum; index_T++) {
-                for (int index_A = 0; index_A < aNum; index_A++) {
-                    addActivityCapacity(index_D, index_T, index_A);
-                }
-            }
+            addActivityCapacityConstraint(index_D);
         }
 
         model.addConstr(penalT, GRB.EQUAL, phiT, "constr2");
@@ -133,18 +129,50 @@ public class Optimizer {
         expr_temp1 = new GRBLinExpr();
         for (int index_R = 0; index_R < rNum; index_R++) {
             expr_temp2 = new GRBLinExpr();
-            x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" +index_D + ".r" + index_R + ".xstep");
-            y_step = model.addVar(0, 1, 0, GRB.BINARY, "d" +index_D + ".r" + index_R + ".ystep");
+            x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" +index_D + ".r" + index_R + ".xstep10");
+            y_step_1 = model.addVar(0, 1, 0, GRB.BINARY, "d" +index_D + ".r" + index_R + ".ystep10");
             expr_temp2.addTerm(1, R[index_R].getP());
             expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
-            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" +index_D + ".r" + index_R + ".temp.xstep");
-            model.addGenConstrPWL(x_step, y_step, stepx_2, stepy, "d" +index_D + ".r" + index_R + ".step.constr10");
-            expr_temp1.addTerm(1, y_step);
+            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" +index_D + ".r" + index_R + ".temp.xstep10");
+            model.addGenConstrPWL(x_step, y_step_1, stepx_2, stepy, "d" +index_D + ".r" + index_R + ".step.constr10");
+            expr_temp1.addTerm(1, y_step_1);
         }
         model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getNumProxyRequest(), "d" + index_D + ".constr10");
     }
 
-    private void addActivityCapacity(int index_D, int index_T, int index_A) {
+    private void addActivityCapacityConstraint(int index_D) throws Exception {
+        expr_temp1 = new GRBLinExpr();
+        for (int index_T = 0; index_T < tNum; index_T++) {
+            for (int index_A = 0; index_A < aNum; index_A++) {
+                expr_temp1 = new GRBLinExpr();
+                for (int index_R = 0; index_R < rNum; index_R++) {
+                    expr_temp2 = new GRBLinExpr();
+                    x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".xstep11.a");
+                    y_step_1 = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".ystep11.a");
+                    expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
+                    expr_temp2.addTerm(1, R[index_R].getT()[index_T]);
+                    expr_temp2.addTerm(1, R[index_R].getA()[index_A]);
+                    expr_temp2.addTerm(-1, R[index_R].getP());
+
+                    model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".temp.xstep11.a");
+                    model.addGenConstrPWL(x_step, y_step_1, stepx_2, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".step.constr11.a");
+                    expr_temp1.addTerm(1, y_step_1);
+
+                    expr_temp2 = new GRBLinExpr();
+                    x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".xstep11.b");
+                    y_step_1 = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".ystep11.b");
+                    expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
+                    expr_temp2.addTerm(1, R[index_R].getT()[index_T]);
+                    expr_temp2.addTerm(1, R[index_R].getA()[index_A]);
+                    expr_temp2.addTerm(1, R[index_R].getP());
+
+                    model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".temp.xstep11.b");
+                    model.addGenConstrPWL(x_step, y_step_1, stepx_4, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".step.constr11.b");
+                    expr_temp1.addTerm(1, y_step_1);
+                }
+                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
+            }
+        }
 
     }
 

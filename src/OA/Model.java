@@ -55,6 +55,8 @@ public class Model {
         return this.K.get(index);
     }
 
+    public int getActivityCapacity(int activity_index) { return  this.instance.getActivityCapacity(activity_index); }
+
     public int getNumProxyRequest() { return this.instance.getNum_proxyRequests(); }
 
     public int getNumOfRequests() {

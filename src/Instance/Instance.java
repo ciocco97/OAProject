@@ -121,4 +121,8 @@ public class Instance {
         return requests.get(i).getProxy();
     }
 
+    public int getActivityCapacity(int activity_index) {
+        return activities.get(activity_index).getCapacity();
+    }
+
 }
