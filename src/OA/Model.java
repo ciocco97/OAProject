@@ -25,7 +25,7 @@ public class Model {
 
         int t, d, g, a, proxy;
         float phiA, phiD, phiT;
-        boolean[] ts, ds, as, mapA;
+        boolean[] ts, ds, mapA, as;
         Request req;
 
         for (int i = 0; i < instance.getNum_requests(); i++) {
@@ -34,15 +34,15 @@ public class Model {
             d = instance.getDayByRequest(i);
             ds = generateBoolArray(d, days);
             a = instance.getActivityByRequest(i);
-            mapA = generateBoolArray(a, instance.getNum_activities());
-            as = arBuilder.getArrayByCategory(instance.getCategoryByActivity(a));
+            as = generateBoolArray(a, instance.getNum_activities());
+            mapA = arBuilder.getArrayByCategory(instance.getCategoryByActivity(a));
             g = instance.getGainByRequest(i);
             phiA = instance.getPenaltyAByRequest(i);
             phiD = instance.getPenaltyDByRequest(i);
             phiT = instance.getPenaltyTByRequest(i);
             proxy = instance.getProxyByRequest(i);
 
-            req = new Request(ts, t, ds, d, mapA, as, a, g, phiA, phiD, phiT, proxy);
+            req = new Request(ts, t, ds, d, as, mapA, a, g, phiA, phiD, phiT, proxy);
             K.add(req);
 
         }
@@ -84,7 +84,6 @@ public class Model {
     }
 
     public double[] getGains() {
-
         double gains[] = new double[numOfRequests];
         for (int i = 0; i < numOfRequests; i++) {
             gains[i] = instance.getGainByRequest(i);

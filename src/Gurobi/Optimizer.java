@@ -7,9 +7,9 @@ import gurobi.*;
 public class Optimizer {
     private GRBModel model;
     private Model K;
-    private GRBLinExpr obj, penalT, penalD, penalA, MAXProxyDay, constraint;
-    private int rNum, t, d, a;
     private GRBRequest[] R;
+    private GRBLinExpr obj, penalT, penalD, penalA, constraint;
+    private int rNum, t, d, a;
     private GRBVar[] ys, ts, as, ds;
     private GRBVar phiT, phiD, phiA;
 
@@ -29,7 +29,6 @@ public class Optimizer {
         penalT = new GRBLinExpr();
         penalD = new GRBLinExpr();
         penalA = new GRBLinExpr();
-        MAXProxyDay = new GRBLinExpr();
 
         t = K.getNumOfTimeSlots();
         d = K.getNumOfDays();
@@ -58,15 +57,12 @@ public class Optimizer {
             // i need these for the objective function
             ys[i] = R[i].getY();
             // now  generate the constraints
-            addContraints(R[i], i, K.getRequest(i));
-            // System.out.println(i);
+            addRequestContraints(R[i], i, K.getRequest(i));
         }
 
-        model.addConstr(penalA, GRB.EQUAL, phiA, "constr2");
+        model.addConstr(penalT, GRB.EQUAL, phiT, "constr2");
         model.addConstr(penalD, GRB.EQUAL, phiD, "constr3");
-        model.addConstr(penalT, GRB.EQUAL, phiT, "constr4");
-
-        model.addConstr(MAXProxyDay, GRB.LESS_EQUAL, K.getMAXNumProxyRequests(), "constr11");
+        model.addConstr(penalA, GRB.EQUAL, phiA, "constr4");
 
         System.out.println("Objective function is creating... ");
 
@@ -81,71 +77,62 @@ public class Optimizer {
 
         System.out.println("Start optimization");
         model.optimize();
-        String output;
-        for (GRBRequest r:R){
-            output+=r.getY().get(GRB.DoubleAttr.X);
-            System.out.println(r.getY().get(GRB.DoubleAttr.X));
-        }
-        System.out.println(output);
+
+        model.write("out.lp");
 
     }
 
-    private void addContraints(GRBRequest R, int i, Request K) throws GRBException {
+    private void addRequestContraints(GRBRequest model_R, int index_R, Request data_R) throws GRBException {
 
-        ts = R.getT();
-        ds = R.getD();
-        as = R.getA();
+        ts = model_R.getT();
+        ds = model_R.getD();
+        as = model_R.getA();
 
-        float tetaT = K.getPenalty_T();
+        float tetaT = data_R.getPenalty_T();
         penalT.addConstant(tetaT);
-        penalT.addTerm(-1 * tetaT, ts[K.getTime()]);
+        penalT.addTerm(-1 * tetaT, ts[data_R.getTime()]);
 
-        float tetaD = K.getPenalty_D();
+        float tetaD = data_R.getPenalty_D();
         penalD.addConstant(tetaD);
-        penalD.addTerm(-1 * tetaD, ds[K.getDay()]);
+        penalD.addTerm(-1 * tetaD, ds[data_R.getDay()]);
 
-        float tetaA = K.getPenalty_A();
+        float tetaA = data_R.getPenalty_A();
         penalA.addConstant(tetaA);
-        penalA.addTerm(-1 * tetaA, as[K.getActivity()]);
+        penalA.addTerm(-1 * tetaA, as[data_R.getActivity()]);
 
+        model.addConstr(model_R.getY(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, index_R + ".constr1");
+
+        constraint = new GRBLinExpr();
         constraint.addTerms(null, ts);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr5");
+        model.addConstr(constraint, GRB.EQUAL, model_R.getY(), index_R + ".constr5");
 
         constraint = new GRBLinExpr();
         constraint.addTerms(null, ds);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr6");
+        model.addConstr(constraint, GRB.EQUAL, model_R.getY(), index_R + ".constr6");
 
         constraint = new GRBLinExpr();
         constraint.addTerms(null, as);
-        model.addConstr(constraint, GRB.EQUAL, R.getY(), i + ".constr7a");
+        model.addConstr(constraint, GRB.EQUAL, model_R.getY(), index_R + ".constr7a");
 
-        // ATTENZIONE, SERVE CHIEDERE A EIL IN DIEIL perché non ho troppo capito la faccenda del mapping, cioè,
-        // secondo me non serve
         for (int j = 0; j < this.a; j++) {
-            int a = K.getActivities_of_category()[j] ? 1 : 0;
-            model.addConstr(as[j], GRB.LESS_EQUAL, a, i + ".constr7b." + j);
+            int a = data_R.getActivities_of_category()[j] ? 1 : 0;
+            model.addConstr(as[j], GRB.LESS_EQUAL, a, index_R + ".constr7b." + j);
         }
 
-        model.addConstr(R.getY(), GRB.GREATER_EQUAL, K.getPROXY() - 1, i + ".constr8");
+        model.addConstr(model_R.getP(), GRB.LESS_EQUAL, model_R.getY(), index_R + ".constr8");
 
-        model.addConstr(R.getP(), GRB.GREATER_EQUAL, K.getPROXY() - 1, i + ".constr9a");
-        model.addConstr(R.getP(), GRB.LESS_EQUAL, K.getPROXY(), i + ".constr9b");
+        model.addConstr(model_R.getP(), GRB.LESS_EQUAL, data_R.getPROXY(), index_R + ".constr9a");
+        model.addConstr(model_R.getP(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, index_R + ".constr9b");
 
-        model.addConstr(R.getP(), GRB.LESS_EQUAL, R.getY(), i + ".constr10");
+    }
 
-
-        for (int j = 0; j < this.d; j++) {
-            int a = K.getDays()[j] ? 1 : 0;
-            MAXProxyDay.addTerm(a, R.getP());
-        }
+    private void addDayontraints() {
 
     }
 
     public static void main(String[] args) throws Exception {
         Optimizer opt = new Optimizer("inst/istanza_giocattolo.txt");
         opt.buildModel();
-
-
 
 
     }

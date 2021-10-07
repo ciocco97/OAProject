@@ -2,10 +2,9 @@ package PS;
 
 import Gurobi.GRBRequest;
 
-import java.sql.Array;
 import java.util.ArrayList;
 
-public class RandomStrategy implements GenerationStrategy{
+public class RandomStrategy implements GenerationStrategy {
 
     @Override
     /**
@@ -14,8 +13,8 @@ public class RandomStrategy implements GenerationStrategy{
      */
     public ArrayList<GRBRequest[]> generatePopulation(GRBRequest[] requests, int size) {
         ArrayList<GRBRequest[]> pop = new ArrayList();
-        for (GRBRequest request:requests){
-            for (int i = 0; i < size; i++){
+        for (GRBRequest request : requests) {
+            for (int i = 0; i < size; i++) {
 
             }
 

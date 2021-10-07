@@ -92,6 +92,11 @@ public class Request {
         this.activities = activities;
     }
 
+    /**
+     * Ritorna un array di lunghezza instance.getNum_activities() di boolean
+     * arBuilder.getArrayByCategory(instance.getCategoryByActivity(this.activity))
+     * @return activities_of_category
+     */
     public boolean[] getActivities_of_category() {
         return activities_of_category;
     }

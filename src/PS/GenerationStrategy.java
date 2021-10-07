@@ -6,5 +6,5 @@ import java.util.ArrayList;
 
 public interface GenerationStrategy {
 
-    public  ArrayList<GRBRequest[]> generatePopulation(GRBRequest[] requests, int size);
+    public ArrayList<GRBRequest[]> generatePopulation(GRBRequest[] requests, int size);
 }
