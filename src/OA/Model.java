@@ -2,6 +2,7 @@ package OA;
 
 import Instance.CategoriesArrayBuilder;
 import Instance.Instance;
+import Log.MyLog;
 
 import java.util.LinkedList;
 
@@ -13,6 +14,7 @@ public class Model {
     private LinkedList<Request> K = new LinkedList();
 
     public Model(String filename) throws Exception {
+        MyLog.log("Load data from file " + filename);
         FileParser parser = new FileParser(filename);
         instance = parser.getIstance();
         this.numOfRequests = instance.getNum_requests();
@@ -28,6 +30,7 @@ public class Model {
         boolean[] ts, ds, mapA, as;
         Request req;
 
+        MyLog.log("Init data requests");
         for (int i = 0; i < instance.getNum_requests(); i++) {
             t = instance.getTimeByRequest(i);
             ts = generateBoolArray(t, times);
@@ -51,6 +54,8 @@ public class Model {
     public Request getRequest(int index) {
         return this.K.get(index);
     }
+
+    public int getNumProxyRequest() { return this.instance.getNum_proxyRequests(); }
 
     public int getNumOfRequests() {
         return numOfRequests;

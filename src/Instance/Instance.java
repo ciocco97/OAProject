@@ -77,10 +77,6 @@ public class Instance {
         this.num_categories = num_categories;
     }
 
-    public void printRequest(int index) {
-        System.out.println(this.requests.get(index));
-    }
-
     public int getNum_requests() {
         return this.requests.size();
     }

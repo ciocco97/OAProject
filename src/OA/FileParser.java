@@ -1,6 +1,7 @@
 package OA;
 
 import Instance.Instance;
+import Log.MyLog;
 
 import java.io.BufferedReader;
 import java.io.File;
