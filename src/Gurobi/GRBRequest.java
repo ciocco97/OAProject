@@ -14,16 +14,16 @@ public class GRBRequest {
         this.index = index;
         this.t = new GRBVar[t];
         for (int i = 0; i < t; i++)
-            this.t[i] = model.addVar(0, 1, 0, GRB.BINARY, index + ".t." + i);
+            this.t[i] = model.addVar(0, 1, 0, GRB.BINARY, "r" + index + ".t" + i);
         this.d = new GRBVar[d];
         for (int i = 0; i < d; i++)
-            this.d[i] = model.addVar(0, 1, 0, GRB.BINARY, index + ".d." + i);
+            this.d[i] = model.addVar(0, 1, 0, GRB.BINARY, "r" + index + ".d" + i);
         this.a = new GRBVar[a];
         for (int i = 0; i < a; i++)
-            this.a[i] = model.addVar(0, 1, 0, GRB.BINARY, index + ".a." + i);
+            this.a[i] = model.addVar(0, 1, 0, GRB.BINARY, "r" + index + ".a" + i);
 
-        this.p = model.addVar(0, 1, 0, GRB.BINARY, index + ".p");
-        this.y = model.addVar(0, 1, 0, GRB.BINARY, index + ".y");
+        this.p = model.addVar(0, 1, 0, GRB.BINARY, "r" + index + ".p");
+        this.y = model.addVar(0, 1, 0, GRB.BINARY, "r" + index + ".y");
     }
 
     public int getIndex() {
