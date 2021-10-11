@@ -138,7 +138,7 @@ public class Optimizer {
 
         model.addConstr(model_R.getP(), GRB.LESS_EQUAL, data_R.getPROXY(), "r" + index_R + ".constr9a");
         model.addConstr(model_R.getP(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, "r" + index_R + ".constr9b");
-        model.addConstr(model_R.getY(), GRB.LESS_EQUAL, 0, "r" + index_R + ".constraint_cattiverrimo");
+//        model.addConstr(model_R.getY(), GRB.LESS_EQUAL, 0, "r" + index_R + ".constraint_cattiverrimo");
 
     }
 
@@ -182,7 +182,7 @@ public class Optimizer {
                 }
                 GRBVar y_sum = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".ysum");
                 model.addConstr(y_sum, GRB.EQUAL, expr_temp1, "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11.sum");
-//                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
+                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
             }
         }
 
