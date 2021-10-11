@@ -9,14 +9,14 @@ public class Optimizer {
     private GRBModel model;
     private Model K;
     private GRBRequest[] R;
-    private GRBLinExpr obj, penalT, penalD, penalA, expr_temp1, expr_temp2, expr_temp3;
+    private GRBLinExpr obj, penalT, penalD, penalA, expr_temp1, expr_temp2;
     private int rNum, tNum, dNum, aNum;
     private GRBVar[] ys, ts, as, ds;
-    private GRBVar phiT, phiD, phiA, y_step, x_step;
-    private final double stepx_2[] = {0, 1.5, 2, 2.5, 3};
-    private final double stepx_3[] = {0, 2.5, 3, 3.5, 4};
-    private final double stepx_5[] = {0, 4.5, 5, 5.5, 6};
-    private final double stepy[] = {0, 0, 1, 0, 0};
+    private GRBVar phiT, phiD, phiA, y_step_a, y_step_b, x_step;
+    private final double[] stepx_2 = {0, 1.5, 2, 2.5, 3};
+    private final double[] stepx_3 = {0, 2.5, 3, 3.5, 4};
+    private final double[] stepx_5 = {0, 4.5, 5, 5.5, 6};
+    private final double[] stepy = {0, 0, 1, 0, 0};
 
     public Optimizer(String filename) throws Exception {
         K = new Model(filename);
@@ -130,6 +130,7 @@ public class Optimizer {
 
         model.addConstr(model_R.getP(), GRB.LESS_EQUAL, data_R.getPROXY(), "r" + index_R + ".constr9a");
         model.addConstr(model_R.getP(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, "r" + index_R + ".constr9b");
+        model.addConstr(model_R.getY(), GRB.LESS_EQUAL, 0, "r" + index_R + ".constraint_cattiverrimo");
 
     }
 
@@ -137,13 +138,13 @@ public class Optimizer {
         expr_temp1 = new GRBLinExpr();
         for (int index_R = 0; index_R < rNum; index_R++) {
             expr_temp2 = new GRBLinExpr();
-            x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".r" + index_R + ".xstep10");
-            y_step = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".r" + index_R + ".ystep10");
+            x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".r" + index_R + ".x10");
+            y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".r" + index_R + ".y10");
             expr_temp2.addTerm(1, R[index_R].getP());
             expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
-            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".r" + index_R + ".temp.xstep10");
-            model.addGenConstrPWL(x_step, y_step, stepx_2, stepy, "d" + index_D + ".r" + index_R + ".step.constr10");
-            expr_temp1.addTerm(1, y_step);
+            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".r" + index_R + ".x10");
+            model.addGenConstrPWL(x_step, y_step_a, stepx_2, stepy, "d" + index_D + ".r" + index_R + ".y10");
+            expr_temp1.addTerm(1, y_step_a);
         }
         model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getNumProxyRequest(), "d" + index_D + ".constr10");
     }
@@ -154,36 +155,63 @@ public class Optimizer {
             for (int index_A = 0; index_A < aNum; index_A++) {
                 expr_temp1 = new GRBLinExpr();
                 for (int index_R = 0; index_R < rNum; index_R++) {
-                    expr_temp2 = new GRBLinExpr();
                     x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11");
-                    y_step = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
+                    y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
+//                    y_step_b = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
+
+                    expr_temp2 = new GRBLinExpr();
                     expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
                     expr_temp2.addTerm(1, R[index_R].getT()[index_T]);
                     expr_temp2.addTerm(1, R[index_R].getA()[index_A]);
                     expr_temp2.addTerm(2, R[index_R].getP());
-
                     model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11.a");
-                    model.addGenConstrPWL(x_step, y_step, stepx_3, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
-                    expr_temp1.addTerm(1, y_step);
 
-//                    expr_temp2 = new GRBLinExpr();
-//                    x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11.b");
-                    y_step = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
-//                    expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
-//                    expr_temp2.addTerm(1, R[index_R].getT()[index_T]);
-//                    expr_temp2.addTerm(1, R[index_R].getA()[index_A]);
-//                    expr_temp2.addTerm(1, R[index_R].getP());
+                    model.addGenConstrPWL(x_step, y_step_a, stepx_3, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
+//                    model.addGenConstrPWL(x_step, y_step_b, stepx_5, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
 
-//                    model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11.b");
-                    model.addGenConstrPWL(x_step, y_step, stepx_5, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
-                    expr_temp1.addTerm(1, y_step);
+                    expr_temp1.addTerm(1, y_step_a);
+//                    expr_temp1.addTerm(1, y_step_b);
                 }
                 GRBVar y_sum = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".ysum");
                 model.addConstr(y_sum, GRB.EQUAL, expr_temp1, "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11.sum");
-                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
+//                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
             }
         }
 
+    }
+
+    public void GRB_optimize_IIS() throws Exception {
+        model.optimize();
+
+        int optimstatus = model.get(GRB.IntAttr.Status);
+
+        if (optimstatus == GRB.Status.INF_OR_UNBD) {
+            model.set(GRB.IntParam.Presolve, 0);
+            model.optimize();
+            optimstatus = model.get(GRB.IntAttr.Status);
+        }
+
+        if (optimstatus == GRB.Status.OPTIMAL) {
+            double objval = model.get(GRB.DoubleAttr.ObjVal);
+            MyLog.log(" ");
+            MyLog.log("Optimal objective: " + objval);
+            printModelVariables();
+        } else if (optimstatus == GRB.Status.INFEASIBLE) {
+            MyLog.log("Model is infeasible");
+
+            // Compute and write out IIS
+            model.computeIIS();
+            model.write("inst/model.ilp");
+            model.feasRelax(GRB.FEASRELAX_LINEAR, true, false, true);
+        } else if (optimstatus == GRB.Status.UNBOUNDED) {
+            MyLog.log("Model is unbounded");
+        } else {
+            MyLog.log("Optimization was stopped with status = " + optimstatus);
+        }
+
+        // Dispose of model and environment
+        model.dispose();
+        model.getEnv().dispose();
     }
 
     public static void main(String[] args) throws Exception {
@@ -193,32 +221,24 @@ public class Optimizer {
         opt.buildModel();
         MyLog.log("Model complete");
 
-        MyLog.log("Start optimization");
-        opt.model.optimize();
-
         MyLog.log("Writing model in inst/out.lp");
         opt.model.write("inst/out.lp");
 
-        MyLog.log("VARIABLES");
-
-        for (GRBVar var : opt.model.getVars()) {
-            MyLog.log(
-                    var.get(GRB.StringAttr.VarName)
-                            + " \t" + var.get(GRB.DoubleAttr.X)
-//                            + " - RC:" + var.get(GRB.DoubleAttr.RC)
-            );
-        }
-
-//        MyLog.log("CONSTRAINTS");
-//        for (GRBConstr constr : opt.model.getConstrs()) {
-//            MyLog.log(
-//                    constr.get(GRB.StringAttr.ConstrName)
-//                            + ": " + constr.get(GRB.DoubleAttr.Slack)
-////                            + " - Shadow Price=" + constr.get(GRB.DoubleAttr.Pi)
-//            );
-//        }
+        MyLog.log("Start optimization");
+        opt.GRB_optimize_IIS();
 
         MyLog.log("End");
+    }
+
+    public void printModelVariables() {
+        MyLog.log("VARIABLES");
+        try {
+            for (GRBVar var : model.getVars()) {
+                MyLog.log(var.get(GRB.StringAttr.VarName) + " \t" + var.get(GRB.DoubleAttr.X));
+            }
+        } catch (GRBException e) {
+            MyLog.log("Error code: " + e.getErrorCode() + ". " + e.getMessage());
+        }
     }
 
 }
