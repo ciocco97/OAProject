@@ -9,10 +9,10 @@ public class Optimizer {
     private GRBModel model;
     private Model K;
     private GRBRequest[] R;
-    private GRBLinExpr obj, penalT, penalD, penalA, expr_temp1, expr_temp2;
+    private GRBLinExpr obj, penalT, penalD, penalA, notPenal, expr_temp1, expr_temp2;
     private int rNum, tNum, dNum, aNum;
     private GRBVar[] ys, ts, as, ds;
-    private GRBVar phiT, phiD, phiA, y_step_a, y_step_b, x_step;
+    private GRBVar phiT, phiD, phiA, phiNot, y_step_a, y_step_b, x_step;
     private final double[] stepx_2 = {0, 1.5, 2, 2.5, 3};
     private final double[] stepx_3 = {0, 2.5, 3, 3.5, 4};
     private final double[] stepx_5 = {0, 4.5, 5, 5.5, 6};
@@ -33,6 +33,7 @@ public class Optimizer {
         penalT = new GRBLinExpr();
         penalD = new GRBLinExpr();
         penalA = new GRBLinExpr();
+        notPenal = new GRBLinExpr();
 
         tNum = K.getNumOfTimeSlots();
         dNum = K.getNumOfDays();
@@ -46,6 +47,7 @@ public class Optimizer {
         phiT = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiT");
         phiA = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiA");
         phiD = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiD");
+        phiNot = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "phiNot");
     }
 
     public void buildModel() throws Exception {
@@ -69,6 +71,7 @@ public class Optimizer {
         model.addConstr(penalT, GRB.EQUAL, phiT, "constr2");
         model.addConstr(penalD, GRB.EQUAL, phiD, "constr3");
         model.addConstr(penalA, GRB.EQUAL, phiA, "constr4");
+        model.addConstr(phiNot, GRB.EQUAL, notPenal, "constr4");
 
         MyLog.log("Objective function is creating... ");
 
@@ -77,6 +80,7 @@ public class Optimizer {
         obj.addTerm(-1, phiA);
         obj.addTerm(-1, phiD);
         obj.addTerm(-1, phiT);
+        obj.addTerm(1, phiNot);
 
         model.setObjective(obj, GRB.MAXIMIZE);
         model.update();
@@ -92,20 +96,24 @@ public class Optimizer {
         float tetaT = data_R.getPenalty_T();
         penalT.addConstant(tetaT);
         penalT.addTerm(-1 * tetaT, ts[data_R.getTime()]);
-        penalT.addConstant(-1 * tetaT);
-        penalT.addTerm(tetaT, model_R.getY());
+//        penalT.addConstant(-1 * tetaT);
+//        penalT.addTerm(tetaT, model_R.getY());
 
         float tetaD = data_R.getPenalty_D();
         penalD.addConstant(tetaD);
         penalD.addTerm(-1 * tetaD, ds[data_R.getDay()]);
-        penalT.addConstant(-1 * tetaD);
-        penalT.addTerm(tetaD, model_R.getY());
+//        penalT.addConstant(-1 * tetaD);
+//        penalT.addTerm(tetaD, model_R.getY());
 
         float tetaA = data_R.getPenalty_A();
         penalA.addConstant(tetaA);
         penalA.addTerm(-1 * tetaA, as[data_R.getActivity()]);
-        penalT.addConstant(-1 * tetaA);
-        penalT.addTerm(tetaA, model_R.getY());
+//        penalT.addConstant(-1 * tetaA);
+//        penalT.addTerm(tetaA, model_R.getY());
+
+        float penalSum = tetaD + tetaT + tetaA;
+        notPenal.addConstant(penalSum);
+        notPenal.addTerm(-1 * penalSum, model_R.getY());
 
         model.addConstr(model_R.getY(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, "r" + index_R + ".constr1");
 
