@@ -9,7 +9,7 @@ public class Optimizer {
     private GRBModel model;
     private Model K;
     private GRBRequest[] R;
-    private GRBLinExpr obj, penalT, penalD, penalA, notPenal, expr_temp1, expr_temp2;
+    private GRBLinExpr obj, penalT, penalD, penalA, notPenal, expr_temp1, expr_temp2, expr_temp3;
     private int rNum, tNum, dNum, aNum;
     private GRBVar[] ys, ts, as, ds;
     private GRBVar phiT, phiD, phiA, phiNot, y_step_a, y_step_b, x_step;
@@ -138,7 +138,6 @@ public class Optimizer {
 
         model.addConstr(model_R.getP(), GRB.LESS_EQUAL, data_R.getPROXY(), "r" + index_R + ".constr9a");
         model.addConstr(model_R.getP(), GRB.GREATER_EQUAL, data_R.getPROXY() - 1, "r" + index_R + ".constr9b");
-//        model.addConstr(model_R.getY(), GRB.LESS_EQUAL, 0, "r" + index_R + ".constraint_cattiverrimo");
 
     }
 
@@ -162,10 +161,11 @@ public class Optimizer {
         for (int index_T = 0; index_T < tNum; index_T++) {
             for (int index_A = 0; index_A < aNum; index_A++) {
                 expr_temp1 = new GRBLinExpr();
+                expr_temp3 = new GRBLinExpr();
                 for (int index_R = 0; index_R < rNum; index_R++) {
                     x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11");
                     y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
-//                    y_step_b = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
+                    y_step_b = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
 
                     expr_temp2 = new GRBLinExpr();
                     expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
@@ -175,13 +175,18 @@ public class Optimizer {
                     model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11.a");
 
                     model.addGenConstrPWL(x_step, y_step_a, stepx_3, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
-//                    model.addGenConstrPWL(x_step, y_step_b, stepx_5, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
+                    model.addGenConstrPWL(x_step, y_step_b, stepx_5, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
 
                     expr_temp1.addTerm(1, y_step_a);
-//                    expr_temp1.addTerm(1, y_step_b);
+                    expr_temp3.addTerm(1, y_step_b);
                 }
-                GRBVar y_sum = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".ysum");
-                model.addConstr(y_sum, GRB.EQUAL, expr_temp1, "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11.sum");
+                x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp11");
+                y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp11.a");
+                model.addConstr(x_step, GRB.EQUAL, expr_temp3, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp11.a");
+
+                model.addGenConstrPWL(x_step, y_step_a, stepx_3, stepy, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp11.a");
+
+                expr_temp1.addTerm(1, y_step_a);
                 model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
             }
         }
@@ -230,7 +235,7 @@ public class Optimizer {
         MyLog.log("Model complete");
 
         MyLog.log("Writing model in inst/out.lp");
-        opt.model.write("inst/out.lp");
+        //opt.model.write("inst/out.lp");
 
         MyLog.log("Start optimization");
         opt.GRB_optimize_IIS();
