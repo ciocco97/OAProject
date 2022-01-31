@@ -1,5 +1,11 @@
 package Instance;
 
+/**
+ * This class builds the mapA of the model. For each category, it generates an array of the size of all the activities,
+ * with 1 if the activity of the current index belongs to the selected category, and with 0 otherwise. In this way, it's
+ * easy to know which activities can be associated with a request. It's usefull because this array is built only one at
+ * the start of the app.
+ */
 public class CategoriesArrayBuilder {
     private boolean[][] arrays;
 

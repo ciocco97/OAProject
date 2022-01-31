@@ -1,0 +1,80 @@
+\ Model (null)_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Maximize
+ 
+Subject To
+ r6.constr11: r6.d0 - r6.y = 0
+ r6.constr15.1: r6.p >= 1
+ r6.constr16: r6.p - r6.y <= 0
+ r7.constr11: r7.d0 - r7.y = 0
+ r7.constr15.1: r7.p >= 1
+ r7.constr16: r7.p - r7.y <= 0
+ r10.constr11: r10.d0 - r10.y = 0
+ r10.constr14: r10.y >= 1
+ r10.constr15.1: r10.p >= 1
+ r12.constr11: r12.d0 - r12.y = 0
+ r12.constr14: r12.y >= 1
+ r12.constr15.1: r12.p >= 1
+ r19.constr11: r19.d0 - r19.y = 0
+ r19.constr14: r19.y >= 1
+ r19.constr15.1: r19.p >= 1
+ r20.constr11: r20.d0 - r20.y = 0
+ r20.constr15.1: r20.p >= 1
+ r20.constr16: r20.p - r20.y <= 0
+ d0.r6.x10: - r6.d0 - r6.p + PEAK2.x_step_constr17.d0.r6.x = 0
+ d0.r7.x10: - r7.d0 - r7.p + PEAK2.x_step_constr17.d0.r7.x = 0
+ d0.r10.x10: - r10.d0 - r10.p + PEAK2.x_step_constr17.d0.r10.x = 0
+ d0.r12.x10: - r12.d0 - r12.p + PEAK2.x_step_constr17.d0.r12.x = 0
+ d0.r19.x10: - r19.d0 - r19.p + PEAK2.x_step_constr17.d0.r19.x = 0
+ d0.r20.x10: - r20.d0 - r20.p + PEAK2.x_step_constr17.d0.r20.x = 0
+ d0.constr10: PEAK2.y_step_constr17.d0.r0.y + PEAK2.y_step_constr17.d0.r1.y
+   + PEAK2.y_step_constr17.d0.r2.y + PEAK2.y_step_constr17.d0.r3.y
+   + PEAK2.y_step_constr17.d0.r4.y + PEAK2.y_step_constr17.d0.r5.y
+   + PEAK2.y_step_constr17.d0.r6.y + PEAK2.y_step_constr17.d0.r7.y
+   + PEAK2.y_step_constr17.d0.r8.y + PEAK2.y_step_constr17.d0.r9.y
+   + PEAK2.y_step_constr17.d0.r10.y + PEAK2.y_step_constr17.d0.r11.y
+   + PEAK2.y_step_constr17.d0.r12.y + PEAK2.y_step_constr17.d0.r13.y
+   + PEAK2.y_step_constr17.d0.r14.y + PEAK2.y_step_constr17.d0.r15.y
+   + PEAK2.y_step_constr17.d0.r16.y + PEAK2.y_step_constr17.d0.r17.y
+   + PEAK2.y_step_constr17.d0.r18.y + PEAK2.y_step_constr17.d0.r19.y
+   + PEAK2.y_step_constr17.d0.r20.y <= 5
+Bounds
+ PEAK2.x_step_constr17.d0.r6.x free
+ PEAK2.x_step_constr17.d0.r7.x free
+ PEAK2.x_step_constr17.d0.r10.x free
+ PEAK2.x_step_constr17.d0.r12.x free
+ PEAK2.x_step_constr17.d0.r19.x free
+ PEAK2.x_step_constr17.d0.r20.x free
+Binaries
+ r6.d0 r6.p r6.y r7.d0 r7.p r7.y r10.d0 r10.p r10.y r12.d0 r12.p r12.y
+ r19.d0 r19.p r19.y r20.d0 r20.p r20.y PEAK2.y_step_constr17.d0.r0.y
+ PEAK2.y_step_constr17.d0.r1.y PEAK2.y_step_constr17.d0.r2.y
+ PEAK2.y_step_constr17.d0.r3.y PEAK2.y_step_constr17.d0.r4.y
+ PEAK2.y_step_constr17.d0.r5.y PEAK2.y_step_constr17.d0.r6.y
+ PEAK2.y_step_constr17.d0.r7.y PEAK2.y_step_constr17.d0.r8.y
+ PEAK2.y_step_constr17.d0.r9.y PEAK2.y_step_constr17.d0.r10.y
+ PEAK2.y_step_constr17.d0.r11.y PEAK2.y_step_constr17.d0.r12.y
+ PEAK2.y_step_constr17.d0.r13.y PEAK2.y_step_constr17.d0.r14.y
+ PEAK2.y_step_constr17.d0.r15.y PEAK2.y_step_constr17.d0.r16.y
+ PEAK2.y_step_constr17.d0.r17.y PEAK2.y_step_constr17.d0.r18.y
+ PEAK2.y_step_constr17.d0.r19.y PEAK2.y_step_constr17.d0.r20.y
+General Constraints
+ d0.r6.y10:
+   PEAK2.y_step_constr17.d0.r6.y = PWL ( PEAK2.x_step_constr17.d0.r6.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+ d0.r7.y10:
+   PEAK2.y_step_constr17.d0.r7.y = PWL ( PEAK2.x_step_constr17.d0.r7.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+ d0.r10.y10:
+   PEAK2.y_step_constr17.d0.r10.y = PWL ( PEAK2.x_step_constr17.d0.r10.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+ d0.r12.y10:
+   PEAK2.y_step_constr17.d0.r12.y = PWL ( PEAK2.x_step_constr17.d0.r12.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+ d0.r19.y10:
+   PEAK2.y_step_constr17.d0.r19.y = PWL ( PEAK2.x_step_constr17.d0.r19.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+ d0.r20.y10:
+   PEAK2.y_step_constr17.d0.r20.y = PWL ( PEAK2.x_step_constr17.d0.r20.x ) : 
+  (0, 0) (1.5, 0) (2, 1) (2.5, 0) (3, 0)
+End
