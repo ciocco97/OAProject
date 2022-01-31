@@ -139,12 +139,12 @@ public class Optimizer {
             y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "PEAK2.y_step_constr17.d" + index_D + ".r" + index_R + ".y");
             expr_temp2.addTerm(1, R[index_R].getP());
             expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
-            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".r" + index_R + ".x10");
-            model.addGenConstrPWL(x_step, y_step_a, stepx_peak2, stepy_peak, "d" + index_D + ".r" + index_R + ".y10");
+            model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".r" + index_R + ".x17");
+            model.addGenConstrPWL(x_step, y_step_a, stepx_peak2, stepy_peak, "d" + index_D + ".r" + index_R + ".y17");
             expr_temp1.addTerm(1, y_step_a);
 
         }
-        model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getNumProxyRequest(), "d" + index_D + ".constr10");
+        model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getNumProxyRequest(), "d" + index_D + ".constr17");
     }
 
     private void addActivityCapacityConstraint(int index_D) throws Exception {
@@ -154,31 +154,31 @@ public class Optimizer {
                 expr_temp1 = new GRBLinExpr(); //this expression will be used as the outer sum
                 expr_temp3 = new GRBLinExpr(); //this will be used as
                 for (int index_R = 0; index_R < rNum; index_R++) {
-                    x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11");
-                    y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
-                    y_step_b = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
+                    x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x18");
+                    y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y18.a");
+                    y_step_b = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y18.b");
 
                     expr_temp2 = new GRBLinExpr();
                     expr_temp2.addTerm(1, R[index_R].getD()[index_D]);
                     expr_temp2.addTerm(1, R[index_R].getT()[index_T]);
                     expr_temp2.addTerm(1, R[index_R].getA()[index_A]);
                     expr_temp2.addTerm(4, R[index_R].getP());
-                    model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x11.a");
+                    model.addConstr(x_step, GRB.EQUAL, expr_temp2, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".x18.a");
 
-                    model.addGenConstrPWL(x_step, y_step_a, stepx_peak3, stepy_peak, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.a");
-                    model.addGenConstrPWL(x_step, y_step_b, stepx_peak7, stepy_peak, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y11.b");
+                    model.addGenConstrPWL(x_step, y_step_a, stepx_peak3, stepy_peak, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y18.a");
+                    model.addGenConstrPWL(x_step, y_step_b, stepx_peak7, stepy_peak, "d" + index_D + ".t" + index_T + ".a" + index_A + ".r" + index_R + ".y18.b");
 
                     expr_temp1.addTerm(1, y_step_a);
                     expr_temp3.addTerm(1, y_step_b);
                 }
-                x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp11");
-                y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp11.a");
-                model.addConstr(x_step, GRB.EQUAL, expr_temp3, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp11.a");
+                x_step = model.addVar(0, GRB.INFINITY, 0, GRB.CONTINUOUS, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp18");
+                y_step_a = model.addVar(0, 1, 0, GRB.BINARY, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp18.a");
+                model.addConstr(x_step, GRB.EQUAL, expr_temp3, "d" + index_D + ".t" + index_T + ".a" + index_A + ".xp18.a");
 
-                model.addGenConstrPWL(x_step, y_step_a, stepx_step1, stepy_step, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp11.a");
+                model.addGenConstrPWL(x_step, y_step_a, stepx_step1, stepy_step, "d" + index_D + ".t" + index_T + ".a" + index_A + ".yp18.a");
 
                 expr_temp1.addTerm(1, y_step_a);
-                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr11");
+                model.addConstr(expr_temp1, GRB.LESS_EQUAL, K.getActivityCapacity(index_A), "d" + index_D + ".t" + index_T + ".a" + index_A + "constr20");
             }
         }
 
