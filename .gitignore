@@ -6,3 +6,4 @@ OAProject/.idea/libraries/gurobi.xml
 .classpath
 .DS_Store
 /bin
+/model.ilp
